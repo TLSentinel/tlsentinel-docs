@@ -1,0 +1,74 @@
+site_name: TLSentinel
+site_description: Self-hosted TLS certificate and infrastructure monitoring
+site_url: https://docs.tlsentinel.io
+repo_url: https://github.com/tlsentinel/tlsentinel-docs
+repo_name: tlsentinel/tlsentinel-docs
+
+theme:
+  name: material
+  logo: assets/logo.png
+  favicon: assets/favicon.png
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.highlight
+    - search.suggest
+    - content.code.copy
+
+nav:
+  - Home: index.md
+  - Getting Started:
+    - getting-started/index.md
+    - Installation: getting-started/installation.md
+    - Configuration: getting-started/configuration.md
+    - First Login: getting-started/first-login.md
+  - Scanner:
+    - scanner/index.md
+    - Deployment: scanner/deployment.md
+    - Configuration: scanner/configuration.md
+  - User Guide:
+    - guide/hosts.md
+    - guide/certificates.md
+    - guide/notifications.md
+    - guide/calendar-feed.md
+  - Administration:
+    - admin/users.md
+    - admin/scanners.md
+    - admin/mail.md
+    - SSO — Entra ID: admin/oidc-entra.md
+  - API Reference: api.md
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.tabbed:
+      alternate_style: true
+  - tables
+  - toc:
+      permalink: true
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/tlsentinel

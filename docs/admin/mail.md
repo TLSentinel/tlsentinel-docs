@@ -1,0 +1,3 @@
+# Mail Configuration
+
+*Coming soon.*
