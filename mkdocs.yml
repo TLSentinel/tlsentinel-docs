@@ -63,7 +63,14 @@ markdown_extensions:
   - toc:
       permalink: true
 
+plugins:
+  - search
+  - macros
+
 extra:
   social:
     - icon: fontawesome/brands/github
       link: https://github.com/tlsentinel
+  docker_images:
+    server: "ghcr.io/tlsentinel/tlsentinel-server:latest"
+    scanner: "ghcr.io/tlsentinel/tlsentinel-scanner:latest"
