@@ -1,17 +1,19 @@
-# SSO — Microsoft Entra ID (OIDC)
+# SSO / OIDC
 
-TLSentinel supports single sign-on via OpenID Connect. This guide covers configuring an Entra ID (formerly Azure AD) app registration to act as the identity provider.
+TLSentinel supports single sign-on via OpenID Connect. OIDC is enabled automatically when the four required environment variables are set — see [Configuration](../getting-started/configuration.md#oidc-optional) for the full variable reference.
+
+The **Sign in with SSO** button appears on the login page as soon as OIDC is configured. On first SSO login, TLSentinel creates a local user record with the `viewer` role. An admin must promote the user in **Settings → Users** if elevated access is required.
 
 ---
 
-## Prerequisites
+## Microsoft Entra ID
+
+### Prerequisites
 
 - An Entra ID tenant with permission to register applications
 - TLSentinel server running and accessible at a known URL (e.g. `https://tlsentinel.example.com`)
 
----
-
-## 1. Create an App Registration
+### 1. Create an App Registration
 
 1. Sign in to the [Entra admin centre](https://entra.microsoft.com)
 2. Navigate to **Identity → Applications → App registrations**
@@ -31,9 +33,7 @@ TLSentinel supports single sign-on via OpenID Connect. This guide covers configu
 
 <!-- screenshot: completed registration form before clicking Register -->
 
----
-
-## 2. Note the Application Details
+### 2. Note the Application Details
 
 After registration, you will land on the app overview page. Copy:
 
@@ -49,9 +49,7 @@ https://login.microsoftonline.com/{tenant-id}/v2.0
 
 Set this as `TLSENTINEL_OIDC_ISSUER`.
 
----
-
-## 3. Create a Client Secret
+### 3. Create a Client Secret
 
 1. In the left menu, go to **Certificates & secrets**
 2. Click **New client secret**
@@ -65,11 +63,9 @@ Set this as `TLSENTINEL_OIDC_ISSUER`.
 Set this as `TLSENTINEL_OIDC_CLIENT_SECRET`.
 
 !!! tip
-    Add the secret's expiry date as a host in TLSentinel so you get alerted before it expires.
+    Track the secret's expiry by adding it as an endpoint in TLSentinel so you get alerted before it expires.
 
----
-
-## 4. Configure Token Claims
+### 4. Configure Token Claims
 
 By default, Entra does not include the user's email in the ID token. To enable it:
 
@@ -83,11 +79,9 @@ By default, Entra does not include the user's email in the ID token. To enable i
 
 When prompted to add the Microsoft Graph `email` permission, accept it.
 
----
+### 5. Set Environment Variables
 
-## 5. Set Environment Variables
-
-Add the following to your `.env` or container environment:
+Add the following to your `.env`:
 
 ```env
 TLSENTINEL_OIDC_ISSUER=https://login.microsoftonline.com/{tenant-id}/v2.0
@@ -98,23 +92,13 @@ TLSENTINEL_OIDC_SCOPES=openid,profile,email
 TLSENTINEL_OIDC_USERNAME_CLAIM=preferred_username
 ```
 
-Restart the server. The **Sign in with SSO** button will appear on the login page automatically when OIDC is configured.
+Restart the server to apply the changes.
 
----
-
-## 6. First SSO Login
-
-On first login via SSO, TLSentinel creates a local user record with the `viewer` role. An admin must promote the user to `admin` in **Settings → Users** if elevated access is required.
-
-<!-- screenshot: Users page showing a newly created SSO user with viewer role -->
-
----
-
-## Troubleshooting
+### Troubleshooting
 
 | Symptom | Likely cause |
 |---|---|
 | Redirect URI mismatch error | The redirect URI in Entra does not exactly match `TLSENTINEL_OIDC_REDIRECT_URL` |
-| Email not populated after login | Optional claims not configured — see step 5 |
+| Email not populated after login | Optional claims not configured — see step 4 |
 | SSO button not appearing | One or more OIDC env vars missing or server not restarted |
 | Login succeeds but user not created | Check server logs for OIDC callback errors |

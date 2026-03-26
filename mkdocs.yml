@@ -34,14 +34,9 @@ theme:
 nav:
   - Home: index.md
   - Getting Started:
-    - getting-started/index.md
     - Installation: getting-started/installation.md
     - Configuration: getting-started/configuration.md
-    - First Login: getting-started/first-login.md
-  - Scanner:
-    - scanner/index.md
-    - Deployment: scanner/deployment.md
-    - Configuration: scanner/configuration.md
+  - Scanner: scanner/index.md
   - User Guide:
     - guide/hosts.md
     - guide/certificates.md
@@ -51,7 +46,7 @@ nav:
     - admin/users.md
     - admin/scanners.md
     - admin/mail.md
-    - SSO — Entra ID: admin/oidc-entra.md
+    - SSO / OIDC: admin/oidc.md
   - API Reference: api.md
 
 markdown_extensions:
