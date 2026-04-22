@@ -13,5 +13,5 @@ A self-hosted TLS certificate and infrastructure monitoring platform. Track cert
 
 - [Installation](getting-started/installation.md)
 - [Configuration](getting-started/configuration.md)
-- [Scanner Deployment](scanner/deployment.md)
+- [Scanner Deployment](scanner/index.md)
 - [API Reference](api.md)
