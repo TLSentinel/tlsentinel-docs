@@ -38,7 +38,7 @@ nav:
     - Configuration: getting-started/configuration.md
   - Scanner: scanner/index.md
   - User Guide:
-    - guide/hosts.md
+    - guide/endpoints.md
     - guide/certificates.md
     - guide/tags.md
     - guide/notifications.md
