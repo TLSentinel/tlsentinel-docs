@@ -71,8 +71,8 @@ TLSENTINEL_DB_USERNAME=tlsentinel
 TLSENTINEL_DB_PASSWORD=changeme
 
 # Server — generate strong secrets before deploying
-TLSENTINEL_JWT_SECRET=        # openssl rand -hex 32
-TLSENTINEL_ENCRYPTION_KEY=    # openssl rand -base64 32
+TLSENTINEL_JWT_SECRET=        # openssl rand -base64 32  (base64, decodes to ≥32 bytes)
+TLSENTINEL_ENCRYPTION_KEY=    # openssl rand -base64 32  (base64, decodes to exactly 32 bytes)
 
 # Bootstrap admin account (only used on first start)
 TLSENTINEL_ADMIN_USERNAME=admin
@@ -82,11 +82,13 @@ TLSENTINEL_ADMIN_PASSWORD=changeme
 Generate the two required secrets:
 
 ```sh
-echo "TLSENTINEL_JWT_SECRET=$(openssl rand -hex 32)"
+echo "TLSENTINEL_JWT_SECRET=$(openssl rand -base64 32)"
 echo "TLSENTINEL_ENCRYPTION_KEY=$(openssl rand -base64 32)"
 ```
 
-Paste the output into your `.env`.
+Paste the output into your `.env`. Both variables are parsed as base64;
+`ENCRYPTION_KEY` must decode to exactly 32 bytes, `JWT_SECRET` to at
+least 32. `openssl rand -base64 32` satisfies both.
 
 ### 4. Start
 
@@ -125,7 +127,7 @@ Scanners are separate agents that perform the actual TLS checks and report back 
 ```sh
 TLSENTINEL_SCANNER_VERSION=latest
 TLSENTINEL_API_URL=http://server:8080
-TLSENTINEL_SCANNER_TOKEN=scanner_xxxxxxxxxxxxxxxxxxxx
+TLSENTINEL_SCANNER_TOKEN=stx_s_xxxxxxxxxxxxxxxxxxxx
 ```
 
 5. Apply the changes:
@@ -148,9 +150,37 @@ You are responsible for providing a PostgreSQL 14+ database and setting the requ
 
 ## First Login
 
-On first startup, TLSentinel creates an admin account using `TLSENTINEL_ADMIN_USERNAME` and `TLSENTINEL_ADMIN_PASSWORD`. If those variables are not set, the bootstrap step is skipped.
+On first startup, if the users table is empty, the server creates an
+admin from `TLSENTINEL_ADMIN_USERNAME` and `TLSENTINEL_ADMIN_PASSWORD`.
+If the table is empty **and** those variables are not set, startup
+**fails with a clear error** — the server will not run without an admin
+account.
 
-Navigate to `http://your-server:8080` and sign in with your admin credentials.
+Once any user exists, the bootstrap is a no-op forever — the env vars
+are ignored even if you change them. It is safe (and recommended) to
+remove them from `.env` after the first successful start.
+
+Navigate to `http://your-server:8080` and sign in.
 
 !!! warning
-    Change your admin password after first login via **My Account → Password**.
+    Change your admin password after first login via **Profile →
+    Password** (the bootstrap user is a normal local user, so
+    self-service password change works).
+
+---
+
+## Behind a Reverse Proxy
+
+If TLSentinel sits behind a reverse proxy (nginx, Caddy, Traefik,
+cloud load balancer), set `TLSENTINEL_TRUSTED_PROXY_CIDRS` so the
+audit log records the real client IP from the `X-Forwarded-For`
+header. Without this, every request appears to come from the proxy.
+
+```sh
+# Comma-separated CIDRs; bare IPs are accepted and promoted to /32 or /128
+TLSENTINEL_TRUSTED_PROXY_CIDRS=10.0.0.0/8,172.16.0.0/12
+```
+
+Only traffic originating from one of these CIDRs is allowed to set
+`X-Forwarded-For`; anything else falls back to the TCP peer address.
+See [Configuration](configuration.md) for details.
