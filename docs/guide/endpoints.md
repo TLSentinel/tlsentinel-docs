@@ -5,8 +5,8 @@ has a **type** that determines how (or whether) it is scanned and what
 information the UI shows for it.
 
 There are three types: `host`, `saml`, and `manual`. Every endpoint — whatever
-its type — can carry tags, sit in groups, have notes, be pinned to a specific
-scanner, and participate in expiry alerts.
+its type — can carry tags, have notes, be pinned to a specific scanner, and
+participate in expiry alerts.
 
 ## Type summary
 
@@ -14,7 +14,7 @@ scanner, and participate in expiry alerts.
 |------------------------------------|:-------:|:-------:|:-------:|
 | Certificate tracking               | ✓       | ✓       | ✓       |
 | Expiry alerts / notifications      | ✓       | ✓       | ✓       |
-| Tags, groups, notes                | ✓       | ✓       | ✓       |
+| Tags and notes                     | ✓       | ✓       | ✓       |
 | Automatic scanning by a scanner    | ✓       | ✓       | —       |
 | Scan history                       | ✓       | ✓       | —       |
 | Scanner assignment (pin or auto)   | ✓       | ✓       | —       |
