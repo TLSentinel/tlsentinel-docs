@@ -35,6 +35,7 @@ services:
     restart: unless-stopped
 
   server:
+    # Stable: leave as-is. Beta channel: change to :beta. Pin a version: e.g. :2026.5.0
     image: ghcr.io/tlsentinel/tlsentinel-server:${TLSENTINEL_SERVER_VERSION:-latest}
     environment:
       TLSENTINEL_DB_HOST:     db
@@ -113,6 +114,7 @@ Scanners are separate agents that perform the actual TLS checks and report back 
 
 ```yaml
   scanner:
+    # Stable: leave as-is. Beta channel: change to :beta. Pin a version: e.g. :2026.5.0
     image: ghcr.io/tlsentinel/tlsentinel-scanner:${TLSENTINEL_SCANNER_VERSION:-latest}
     environment:
       TLSENTINEL_API_URL:   ${TLSENTINEL_API_URL}
