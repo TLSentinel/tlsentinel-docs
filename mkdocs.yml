@@ -1,6 +1,6 @@
 site_name: TLSentinel
 site_description: Self-hosted TLS certificate and infrastructure monitoring
-site_url: https://docs.tlsentinel.io
+site_url: https://docs.tlsentinel.com
 repo_url: https://github.com/tlsentinel/tlsentinel-docs
 repo_name: tlsentinel/tlsentinel-docs
 
