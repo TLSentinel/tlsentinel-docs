@@ -1,0 +1,24 @@
+/*
+ * Brand palette overrides for the Material `custom` primary/accent.
+ * Values must match the app's palette in
+ * tlsentinel-server/web/src/index.css and the marketing site at
+ * tlsentinel.github.io/index.html.
+ *
+ *   --primary-color    #000e24  app's deep navy
+ *   --primary-container#00234b  hover / pressed state
+ *   --tertiary-color   #006d3d  valid / healthy state (unused here, kept for parity)
+ */
+
+:root {
+  --md-primary-fg-color:         #000e24;
+  --md-primary-fg-color--light:  #00234b;
+  --md-primary-fg-color--dark:   #000816;
+  --md-accent-fg-color:          #00234b;
+  --md-accent-fg-color--transparent: rgba(0, 35, 75, 0.1);
+}
+
+/* Dark scheme tightens contrast — use a lighter on-navy text accent. */
+[data-md-color-scheme="slate"] {
+  --md-primary-fg-color:         #000e24;
+  --md-accent-fg-color:          #a8c7fa; /* matches app dark-mode --primary-color */
+}
