@@ -62,6 +62,32 @@ Remove `TLSENTINEL_ADMIN_USERNAME` / `TLSENTINEL_ADMIN_PASSWORD` from
 your environment after the first successful start. Change the
 bootstrap admin's password via **Profile → Password**.
 
+### Break-glass recovery
+
+Last-resort env-var path for recovering an admin who lost both their
+TOTP device and their recovery codes (or forgot their password) when
+no second admin exists to perform the reset via the UI. Distinct from
+the bootstrap admin vars above — this runs against an *existing*
+admin and applies a destructive reset.
+
+| Variable | Default | Description |
+|---|---|---|
+| `TLSENTINEL_BREAKGLASS` | — | Master toggle. `true` to apply the configured resets on next startup. Reset flags below without this set are logged and ignored. |
+| `TLSENTINEL_BREAKGLASS_USER` | — | Username of the admin to recover (their *current* username). Required when the master toggle is set. |
+| `TLSENTINEL_BREAKGLASS_RESET_TOTP` | — | `true` to clear the user's TOTP secret and recovery codes. |
+| `TLSENTINEL_BREAKGLASS_RESET_PASSWORD` | — | `true` to reset the user's password to `TLSENTINEL_BREAKGLASS_PASSWORD`. |
+| `TLSENTINEL_BREAKGLASS_PASSWORD` | — | The new password. Required when `RESET_PASSWORD=true`. |
+
+The path refuses to operate on non-admin or non-local (OIDC) accounts,
+fails loud on a typo'd username, and emits a single
+`auth.bootstrap.breakglass` audit row per successful run. After running
+it, **remove every `TLSENTINEL_BREAKGLASS_*` variable** and restart
+once more so the recovery path is no longer active.
+
+See
+[Account recovery](../admin/users.md#account-recovery) for the full
+operator runbook.
+
 ---
 
 ## Logging

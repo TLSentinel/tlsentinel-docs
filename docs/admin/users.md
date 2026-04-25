@@ -34,6 +34,95 @@ environment variables. The user is created as a **local** user with the
 - Change the bootstrap password at first login (the user is a normal
   local user, self-service password change works).
 
+## Account recovery
+
+Routine cases — a user forgets their password, an admin resets it from
+**Settings → Users**; a user loses their TOTP device, they redeem one
+of the recovery codes saved during enrollment. The two cases below need
+explicit operator attention.
+
+### A user lost both their device and their recovery codes
+
+Any other admin can clear the user's TOTP enrollment from
+**Settings → Users → ⋯ → Reset 2FA**. The user then signs in with their
+password alone and re-enrolls on next login. This action is gated by
+the dedicated `users:credentials` permission (separate from the
+lifecycle bucket `users:edit`, since "can reset another user's
+credentials" implies "can become that user") and audited as
+`auth.totp.disable` with `reason: admin_reset`.
+
+### The sole admin lost their device and their recovery codes
+
+If only one admin exists and that admin is locked out, the UI path
+above is unavailable — there is no second admin to perform the reset.
+The **break-glass** env-var path exists for exactly this case (and for
+the sole admin who has forgotten their password). It runs at startup,
+refuses to operate on non-admin or non-local accounts, and emits a
+single `auth.bootstrap.breakglass` audit row stamped with the system
+actor.
+
+#### Procedure
+
+1. Stop the server.
+
+2. Set the recovery env vars on the container or process.
+
+    Clearing TOTP only (the admin still remembers their password):
+
+    ```bash
+    TLSENTINEL_BREAKGLASS=true
+    TLSENTINEL_BREAKGLASS_USER=<admin's current username>
+    TLSENTINEL_BREAKGLASS_RESET_TOTP=true
+    ```
+
+    Resetting both:
+
+    ```bash
+    TLSENTINEL_BREAKGLASS=true
+    TLSENTINEL_BREAKGLASS_USER=<admin's current username>
+    TLSENTINEL_BREAKGLASS_RESET_TOTP=true
+    TLSENTINEL_BREAKGLASS_RESET_PASSWORD=true
+    TLSENTINEL_BREAKGLASS_PASSWORD=<temporary password>
+    ```
+
+    `BREAKGLASS_USER` is the admin's *current* username, which may not
+    match `TLSENTINEL_ADMIN_USERNAME` if it was renamed since first
+    boot.
+
+3. Start the server. Watch for a `breakglass executed` log line and an
+   `auth.bootstrap.breakglass` row in the audit log confirming the
+   action.
+
+4. **Remove every `TLSENTINEL_BREAKGLASS_*` variable from the
+   environment** and restart the server again so the recovery path is
+   no longer active.
+
+5. Sign in. Immediately rotate the password (**Profile → Password**)
+   and re-enroll TOTP (**My Account → Two-Factor Authentication**).
+
+!!! warning "Why the master toggle"
+    `TLSENTINEL_BREAKGLASS=true` is the explicit "I know what I'm doing"
+    gate. Reset flags without it set are logged and ignored, so a
+    `RESET_TOTP=true` accidentally baked into a compose file won't
+    fire on every boot. After step 4 above, removing the master
+    toggle is what makes future reboots safe.
+
+#### What the path refuses to do
+
+- **Operate on a user that doesn't exist.** Fails loud rather than
+  silently falling through to the first-run create path — if you
+  typo'd the username, you want to know immediately.
+- **Operate on a non-admin account.** Break-glass is a lockout-recovery
+  tool for the sole-admin edge case, not a generic password reset.
+  Reset routine accounts through **Settings → Users**.
+- **Operate on an OIDC account.** Those have no local password to
+  reset and no TOTP enrollment in TLSentinel — recover them at the
+  identity provider.
+
+See
+[Configuration → Break-glass recovery](../getting-started/configuration.md#break-glass-recovery)
+for the full env-var reference.
+
 ## Creating users
 
 **Local users** — **Settings → Users → New user**. Required fields are
