@@ -40,7 +40,9 @@ services:
     environment:
       TLSENTINEL_DB_HOST:     db
       TLSENTINEL_DB_PORT:     5432
-      TLSENTINEL_DB_SSLMODE:  disable
+      # 'disable' is fine for the bundled db service above (docker bridge, never leaves host).
+      # For a remote Postgres, recommended: 'require' (or 'verify-full' with a CA bundle).
+      TLSENTINEL_DB_SSLMODE: disable
       TLSENTINEL_DB_NAME:     ${TLSENTINEL_DB_NAME:-tlsentinel}
       TLSENTINEL_DB_USERNAME: ${TLSENTINEL_DB_USERNAME:-tlsentinel}
       TLSENTINEL_DB_PASSWORD: ${TLSENTINEL_DB_PASSWORD}
